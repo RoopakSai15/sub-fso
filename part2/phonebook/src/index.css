@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+.notification{
+    background-color: lightgrey;
+    border: 5px dashed;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
+}

@@ -2,23 +2,70 @@ import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import Persons from "./components/Persons";
 import PersonForm from "./components/PersonForm";
-import axios from "axios";
-
+import personService from "./services/persons";
+import Notification from "./components/Notification";
 
 function App() {
   const [filterStr, setFilterStr] = useState("");
-  const [persons, setPersons] = useState({});
+  const [allPersons, setAllPersons] = useState([]);
   const [newPerson, setNewPerson] = useState({name:'',number:''})
+  const [notification, setNotification] = useState()
 
 
   const addPerson = (event) => {
     event.preventDefault();
-    if(persons.find(({name}) => name === newPerson.name)){
-      window.alert(`This ${newPerson.name} already there, gng!`);
+    
+    const result = allPersons.find((person) => person.name === newPerson.name)
+
+    if (!result){
+      personService
+        .create(newPerson)
+        .then((person) => {
+          setAllPersons(allPersons.concat(person))
+          setNewPerson({name:'', number:''})
+          setNotification({
+            type: 'success',
+            text: `${newPerson.name} has been added to the Phonebook`,
+          })
+          setTimeout(() => {
+            setNotification(null)
+          }, 5000);
+        })
     }else{
-      const person = { ...newPerson, id: persons.length > 0 ? Math.max(...persons.map(p => p.id))+ 1: 1}
-      setPersons([...persons, person]);
-      setNewPerson({name:'',number:''});}
+      if(window.confirm(`This ${newPerson.name} already exists in the Phonebook. replace the old number with a new one?`)){
+        personService
+          .update(result.id, newPerson)
+          .then((updatedPerson) => {
+            setAllPersons((prevPersons) => 
+              prevPersons.map((person) => 
+                person.id !== updatedPerson.id ? person : updatedPerson
+              )
+            )
+            setNewPerson({name:'', number:''})
+            setNotification({
+              type: "success",
+              text: `${newPerson.name} was successfully updated`,
+            });
+          })
+          .catch((error) => {
+            if (error.response?.status === 404) {
+              setAllPersons((prevPersons) => {
+                prevPersons.filter((person) => person.id !== result.id)
+              })
+              setNotification({
+                type: "error",
+                text: `Information of ${newPerson.name} has already been removed from the server`,
+              })
+            } else {
+              setNotification({
+                type: "error",
+                text: error.response?.data?.error || "unknown error",
+              })
+            } 
+          })
+      } 
+    }
+
   }
   
   const onFormChange = ({target: {name, value}}) => {
@@ -32,27 +79,52 @@ function App() {
     setFilterStr(event.target.value);
   }
 
-  useEffect(()=>{
-    console.log("effect")
-
-    const eventHandler = response => {
-      console.log("promise fulfilled")
-      setPersons(response.data);
+  const removeNumber = (id, name) => {
+    if (window.confirm(`Delete ${name}'s number?`)){
+      personService
+        .remove(id).then(() => {
+          setAllPersons((allPersons) => 
+            allPersons.filter((person) => person.id !== id)
+          )
+          setNotification({
+            type: 'error',
+            text: `${name}'s details successfully deleted.`
+          })
+        })
     }
+  }
 
-    const promise = axios.get("http://localhost:3001/persons")
-    promise.then(eventHandler)
+  useEffect(()=>{
+    personService.getAll().then(
+      initialNumbers => {
+        setAllPersons(initialNumbers)
+      }
+    )
 
   },[])
+
+  useEffect(() => {
+    if(notification) {
+      const timer = setTimeout(() => {
+        setNotification(null)
+      }, 4000);
+
+      return () => {
+        clearTimeout(timer);
+      }
+    }
+
+  }, [notification])
 
   return (
     <>
     <h2>Phonebook</h2>
+    <Notification notification={notification}/>
     <Filter filterStr={filterStr} onFilterChange={onFilterChange}/>
     <h3>Add a new</h3>
     <PersonForm newPerson={newPerson} onFormChange={onFormChange} addPerson={addPerson} />
     <h3>Numbers</h3>
-    <Persons persons={persons} filterStr={filterStr} />
+    <Persons persons={allPersons} filterStr={filterStr} removeNumber={removeNumber}/>
     </>
   )
 }

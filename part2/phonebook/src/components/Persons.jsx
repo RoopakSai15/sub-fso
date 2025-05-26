@@ -1,4 +1,4 @@
-const Persons = ({persons, filterStr}) => {
+const Persons = ({persons, filterStr, removeNumber}) => {
     const normFilter = filterStr.toLowerCase().trim();
 
     
@@ -10,7 +10,7 @@ const Persons = ({persons, filterStr}) => {
     return (
         <>
         {fpersons.map((person) => (
-            <p key={person.id}>{person.name} {person.number}</p>
+            <p key={person.id}>{person.name} {person.number} <button onClick={() => removeNumber(person.id, person.name)}>delete</button></p>
         ))}
         </>
     )
