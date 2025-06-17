@@ -1,7 +1,15 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
+app.use(
+    morgan(':method :url :status :res[content-length] - :response-time ms :post')
+)
+
+morgan.token('post', (req) => {
+    return req.method === 'POST' ? JSON.stringify(req.body) : ' '
+})
 
 const persons = [
     { 
@@ -55,7 +63,7 @@ app.post('/api/persons', (request, response) => {
         response.status(400).json({error:'name or number missing'})
     }
 
-    const nameExists = person.some(person => person.name === name)
+    const nameExists = persons.some(person => person.name === name)
 
     if (nameExists) {
         response.status(400).json({error:'name must be unique'})
