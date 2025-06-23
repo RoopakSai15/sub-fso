@@ -1,8 +1,5 @@
 const Persons = ({persons, filterStr, removeNumber}) => {
     const normFilter = filterStr.toLowerCase().trim();
-
-    
-
     const fpersons = Array.isArray(persons) ? (normFilter.length === 0 ? persons : persons.filter((person)=>
         person.name.toLowerCase().includes(normFilter)
     )): [];
