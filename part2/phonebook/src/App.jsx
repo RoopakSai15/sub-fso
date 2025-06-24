@@ -23,13 +23,19 @@ function App() {
         .then((person) => {
           setAllPersons(allPersons.concat(person))
           setNewPerson({name:'', number:''})
-          setNotification({
+          setNotification({ 
             type: 'success',
             text: `${newPerson.name} has been added to the Phonebook`,
           })
           setTimeout(() => {
             setNotification(null)
           }, 5000);
+        }).catch(error => {
+          console.log(error.response.data.error)
+          setNotification({
+            type: 'error',
+            text: error.response.data.error
+          })
         })
     }else{
       if(window.confirm(`This ${newPerson.name} already exists in the Phonebook. replace the old number with a new one?`)){
