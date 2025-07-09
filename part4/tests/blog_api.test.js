@@ -34,12 +34,13 @@ describe("GET Method check", () => {
 
 describe('creating a new blog', () => {
   test('new blog post',async () => {
+    const blogsBefore = await helper.blogsInDB() 
     const newBlog = helper.newBlog
 
     response = await api.post('/api/blogs').send(newBlog)
 
     const blogsAfter = await helper.blogsInDB();
-    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length + 1)
+    assert.strictEqual(blogsAfter.length, blogsBefore.length + 1)
 
     const titles = blogsAfter.map(bloga => bloga.title)
     assert.ok(titles.includes(newBlog.title))
