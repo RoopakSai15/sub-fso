@@ -3,25 +3,22 @@ const User = require('../models/user')
 
 const initialBlogs = [
   {
-    _id: "5a422aa71b54a676234d17f8",
-    title: "Go To Statement Considered Harmful",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-    likes: 5,
+    title: 'Go To Statement Considered Harmful',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+    likes: 5
   },
   {
-    _id: "5a422b3a1b54a676234d17f9",
-    title: "Canonical string reduction",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-    likes: 12,
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12
   },
   {
-    _id: "5a422b891b54a676234d17fa",
-    title: "First class tests",
-    author: "Robert C. Martin",
-    url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
-    likes: 10,
+    title: 'First class tests',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+    likes: 10
   }
 ]
 
@@ -33,14 +30,9 @@ const newBlog = {
 }
 
 const blogWNoLikes = {
-  title: 'How niggesh is played a fool with me',
-  author: 'Suresh S. Gopi',
-  url: 'http://blog.sexgangkerala.com/sura/polayadimone.html'
-}
-
-const blogsInDB = async () => {
-  const blogs = await Blog.find({})
-  return blogs.map(blog => blog.toJSON()) 
+  title: 'TDD harms architecture',
+  author: 'Robert C. Martin',
+  url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
 }
 
 const blogWNoTitle = {
@@ -49,10 +41,61 @@ const blogWNoTitle = {
   likes: 2
 }
 
+const blogWNoUrl = {
+  title: 'React patterns',
+  author: 'Michael Chan',
+  likes: 7
+}
+
+const blogsInDB = async () => {
+  const blogs = await Blog.find({})
+  return blogs.map(blog => blog.toJSON()) 
+}
+
+const initialUsers = [
+  {
+    username: 'user',
+    passwordHash: 'secret'
+  },
+  {
+    username: 'user2',
+    password: 'secret'
+  },
+]
+
 const usersinDB = async () => {
   const users = await User.find({})
 
   return users.map(u => u.toJSON())
+}
+
+const loginUser = {
+  username: 'root',
+  password: 'sekret'
+}
+const uniqueUser = {
+  username: 'unique',
+  password: 'secret'
+}
+
+const notUniqueUser = {
+  username: 'user',
+  password: 'secret'
+}
+
+const userWithOutPassword = {
+  username: 'user3'
+}
+
+const userWithTooShortPassword = {
+  username: 'small',
+  password: 'se'
+}
+
+const addLoginUser = async () => {
+  const passwordHash = await bcrypt.hash(loginUser.password, 10)
+  const user = new User({ username: loginUser.username, passwordHash })
+  await user.save()
 }
 
 module.exports = {
@@ -61,5 +104,15 @@ module.exports = {
   newBlog,
   blogWNoLikes,
   blogWNoTitle,
-  usersinDB
+  blogWNoUrl,
+
+  initialUsers,
+  usersinDB,
+  loginUser,
+  uniqueUser,
+  notUniqueUser,
+  userWithOutPassword,
+  userWithTooShortPassword,
+  addLoginUser,
+
 }
