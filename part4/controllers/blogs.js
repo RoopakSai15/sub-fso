@@ -68,9 +68,6 @@ blogsRouter.put('/:id', userExtractor,async (request, response, next) => {
   
 
     if (!blog) return response.status(404).json({ error: 'blog not found' })
-    if (blog.user.toString() !== user.id.toString())
-      return response.status(401).json({ error: 'unauthorized access' })
-    
     const updatedFields = {}
     if (title !== undefined) updatedFields.title = title
     if (author !== undefined) updatedFields.author = author
