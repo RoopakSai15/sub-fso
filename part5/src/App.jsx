@@ -106,11 +106,20 @@ function App() {
       const response = await blogService.create(blogObject)
 
       setBlogs(blogs.concat(response))
-      handleNotification(`added ${response.title} by ${response.author}`, 'message')
+      handleNotification(`added ${response.title} by ${response.author}`, 'success')
     }catch(error){
       handleError(error)
     }
   }
+  const deleteBlog = async ({title, author, id}) => {
+    try{
+      await blogService.remove(id)
+      setBlogs(blogs.filter(blog => blog.id !== id))
+      handleNotification(`removed ${title} by ${author}`, 'success')
+    } catch (error) {
+      handleError(error)
+    }
+  } 
 
   const blogForm = () => {
     return (
@@ -148,7 +157,7 @@ function App() {
         {blogForm()}
         </div> 
       }
-      <BlogList blogs={blogs} updateLikes={updateLikes}  />
+      <BlogList blogs={blogs} updateLikes={updateLikes} deleteBlog={deleteBlog} user={user} />
     </div>
   )
 }

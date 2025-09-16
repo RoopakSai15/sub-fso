@@ -1,7 +1,14 @@
 import { useState } from "react"
 
-const Blog = ({ blog, updateLikes}) => {
+const Blog = ({ blog, updateLikes, deleteBlog, user}) => {
     const [showDetails, setShowDetails] = useState(false)
+
+    const handleDelete = () => {
+        if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)){
+            deleteBlog(blog)
+        }
+    }
+    
     const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -18,17 +25,20 @@ const Blog = ({ blog, updateLikes}) => {
                     {showDetails ? 'hide' : 'view'}
                 </button>
             </div>
-            {showDetails && 
+            {showDetails && (
             <>
                 <a href={blog.url}>{blog.url} </a> 
                 <div className="likes">
-                    likes {blog.likes}
-                    <button onClick={() => updateLikes(blog)}>like</button>
+                    likes {blog.likes} 
+                    <button onClick={() => updateLikes(blog)}> like </button>
                 </div>
-                <p>Added by: {blog.user?.name || 'Unknown'}</p>
-                
+                <p>Added by: {blog.user.name} </p>
+                { user.username === blog.user?.username && (
+
+                <button onClick={() => handleDelete()}>remove</button>
+                )}
             </>
-            }
+            )}
         </div>
 )}
 

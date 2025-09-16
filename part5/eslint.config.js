@@ -25,5 +25,6 @@ export default defineConfig([
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
+    ignores: ['node_modules', 'dist', '.eslintrc.cjs', 'vite.config.js']
   },
 ])
